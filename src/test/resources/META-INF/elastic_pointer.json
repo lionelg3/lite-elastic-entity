@@ -1,0 +1,6 @@
+{
+  "files": [
+    "src/test/resources/META-INF/elastic_wrong.json",
+    "src/test/resources/META-INF/elastic.json"
+  ]
+}

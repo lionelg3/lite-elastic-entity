@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "client.transport.ignore_cluster_name": true,
+    "client.transport.ping_timeout": "20s",
+    "client.transport.nodes_sampler_interval": "10s",
+    "client.transport.sniff": true,
+    "cluster.name": "myClusterName"
+  },
+  "addresses": [
+    "host1:9300",
+    "host2:9300",
+    "host3:9300"
+  ],
+  "entities": [
+    "com.gmail.lionelg3.elastic.object.Article",
+    "com.gmail.lionelg3.elastic.object.Book",
+    "com.gmail.lionelg3.elastic.object.Author"
+  ]
+}
