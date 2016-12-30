@@ -17,7 +17,7 @@ public class ElasticConfiguration {
     public ElasticConfiguration() {
     }
 
-    public ArrayList getFiles() {
+    public ArrayList<String> getFiles() {
         return files;
     }
 
