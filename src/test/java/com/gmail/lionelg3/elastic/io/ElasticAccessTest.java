@@ -19,7 +19,7 @@ public class ElasticAccessTest {
         try {
             ElasticConfiguration configuration = new ElasticConfigurationLoader().loadConfiguration("META-INF/elastic_sample.json");
             ElasticAccess elasticAccess = new ElasticAccess(configuration);
-            Client client = elasticAccess.getClient();
+            Client client = (Client)elasticAccess.getNewClient();
             client.prepareGet().get();
         } catch (Exception e) {
             err = e;

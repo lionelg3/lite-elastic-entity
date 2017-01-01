@@ -9,6 +9,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.WrapperQueryBuilder;
 
@@ -29,6 +30,7 @@ class ElasticRepository<T> {
     private final Class<T> _clazz;
     private String _index;
     private String _type;
+    private Client _client;
 
     ElasticRepository(ElasticAccess access, Class<T> clazz) {
         this._access = access;
@@ -62,33 +64,37 @@ class ElasticRepository<T> {
             throw new RuntimeException("Unmap error for " + this._clazz, e);
         }
     }
+    
+    public synchronized Client getClient() {
+        return (_client != null) ? _client : (Client) _access.getNewClient();
+    }
 
     public String insert(String id, T t) {
-        IndexResponse response = _access.getClient().prepareIndex(_index, _type, id)
+        IndexResponse response = getClient().prepareIndex(_index, _type, id)
                 .setSource(_map(t)).get();
         return response.getId();
     }
 
     public T load(String id) {
-        GetResponse response = _access.getClient().prepareGet(_index, _type, id).get();
+        GetResponse response = getClient().prepareGet(_index, _type, id).get();
         return _unmap(response.getSourceAsString());
     }
 
     public String delete(String id) {
-        DeleteResponse deleteResponse = _access.getClient().prepareDelete(_index, _type, id)
+        DeleteResponse deleteResponse = getClient().prepareDelete(_index, _type, id)
                 .get();
         return deleteResponse.getId();
     }
 
     public T update(String id, T t) {
-        _access.getClient().prepareUpdate(_index, _type, id)
+        getClient().prepareUpdate(_index, _type, id)
                 .setDoc(_map(t))
                 .get();
         return t;
     }
 
     public List<T> search(QueryBuilder queryBuilder) {
-        SearchRequestBuilder searchRequestBuilder = _access.getClient()
+        SearchRequestBuilder searchRequestBuilder = getClient()
                 .prepareSearch(_index)
                 .setTypes(_type)
                 .setQuery(queryBuilder);
@@ -102,7 +108,7 @@ class ElasticRepository<T> {
     }
 
     public List<T> search(String query) {
-        SearchRequestBuilder searchRequestBuilder = _access.getClient()
+        SearchRequestBuilder searchRequestBuilder = getClient()
                 .prepareSearch(_index)
                 .setTypes(_type)
                 .setQuery(new WrapperQueryBuilder(query));
@@ -116,7 +122,7 @@ class ElasticRepository<T> {
     }
 
     public void insert(String id, T t, Consumer<T> f) {
-        _access.getClient().prepareIndex(_index, _type, id)
+        getClient().prepareIndex(_index, _type, id)
                 .setSource(_map(t))
                 .execute(new ActionListener<IndexResponse>() {
                     @Override
@@ -133,7 +139,7 @@ class ElasticRepository<T> {
     }
 
     public void load(String id, Consumer<T> f) {
-        _access.getClient().prepareGet(_index, _type, id)
+        getClient().prepareGet(_index, _type, id)
                 .execute(new ActionListener<GetResponse>() {
                     @Override
                     public void onResponse(GetResponse getResponse) {
@@ -150,7 +156,7 @@ class ElasticRepository<T> {
     }
 
     public void delete(String id, Consumer<String> f) {
-        _access.getClient().prepareDelete(_index, _type, id)
+        getClient().prepareDelete(_index, _type, id)
                 .execute(new ActionListener<DeleteResponse>() {
                     @Override
                     public void onResponse(DeleteResponse deleteResponse) {
@@ -166,7 +172,7 @@ class ElasticRepository<T> {
     }
 
     public void update(String id, T t, Consumer<T> f) {
-        _access.getClient().prepareUpdate(_index, _type, id)
+        getClient().prepareUpdate(_index, _type, id)
                 .setDoc(_map(t))
                 .execute(new ActionListener<UpdateResponse>() {
                     @Override
@@ -183,7 +189,7 @@ class ElasticRepository<T> {
     }
 
     public void search(QueryBuilder queryBuilder, Consumer<List<T>> f) {
-        SearchRequestBuilder searchRequestBuilder = _access.getClient()
+        SearchRequestBuilder searchRequestBuilder = getClient()
                 .prepareSearch(_index)
                 .setTypes(_type)
                 .setQuery(queryBuilder);
@@ -207,7 +213,7 @@ class ElasticRepository<T> {
     }
 
     public void search(String query, Consumer<List<T>> f) {
-        SearchRequestBuilder searchRequestBuilder = _access.getClient()
+        SearchRequestBuilder searchRequestBuilder = getClient()
                 .prepareSearch(_index)
                 .setTypes(_type)
                 .setQuery(new WrapperQueryBuilder(query));

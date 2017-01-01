@@ -43,7 +43,7 @@ class ElasticAccess {
         this.addresses = addresses;
     }
 
-    public Client getClient() {
+    public Object getNewClient() {
         return new PreBuiltTransportClient(this.settings).addTransportAddresses(addresses);
     }
 }
