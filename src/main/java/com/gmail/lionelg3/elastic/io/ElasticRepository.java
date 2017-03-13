@@ -23,16 +23,15 @@ import java.util.function.Consumer;
  * Created by lionel on 21/11/2016.
  *
  */
-class ElasticRepository<T> {
+public class ElasticRepository<T> {
 
     private final ElasticAccess _access;
     private final ObjectMapper _mapper;
     private final Class<T> _clazz;
     private String _index;
     private String _type;
-    private Client _client;
 
-    ElasticRepository(ElasticAccess access, Class<T> clazz) {
+    public ElasticRepository(ElasticAccess access, Class<T> clazz) {
         this._access = access;
         this._mapper = new ObjectMapper();
         this._clazz = clazz;
@@ -64,9 +63,9 @@ class ElasticRepository<T> {
             throw new RuntimeException("Unmap error for " + this._clazz, e);
         }
     }
-    
-    public synchronized Client getClient() {
-        return (_client != null) ? _client : (Client) _access.getNewClient();
+
+    public Client getClient() {
+        return _access.getClient();
     }
 
     public String insert(String id, T t) {
