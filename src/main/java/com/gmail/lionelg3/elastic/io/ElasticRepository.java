@@ -2,6 +2,7 @@ package com.gmail.lionelg3.elastic.io;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.lionelg3.elastic.io.annotation.Document;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
@@ -39,10 +40,17 @@ class ElasticRepository<T> {
         this._type = clazz.getSimpleName().toLowerCase();
         if (clazz.isAnnotationPresent(XmlRootElement.class)) {
             XmlRootElement annotation = clazz.getAnnotation(XmlRootElement.class);
-            if (!annotation.namespace().contains("default"))
+            if (!annotation.namespace().contains("##default"))
                 this._index = annotation.namespace();
-            if (!annotation.name().contains("default"))
+            if (!annotation.name().contains("##default"))
                 this._type = annotation.name();
+        }
+        if (clazz.isAnnotationPresent(Document.class)) {
+            Document annotation = clazz.getAnnotation(Document.class);
+            if (!annotation.index().contains("default"))
+                this._index = annotation.index();
+            if (!annotation.type().contains("object"))
+                this._type = annotation.type();
         }
     }
 

@@ -3,6 +3,7 @@ package com.gmail.lionelg3.elastic.io;
 import com.gmail.lionelg3.elastic.object.Article;
 import com.gmail.lionelg3.elastic.object.Book;
 import com.gmail.lionelg3.elastic.object.HomePage;
+import com.gmail.lionelg3.elastic.object.Product;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,6 +46,20 @@ public class ElasticIdResolverTest {
         String id = idResolver.getId(p1);
 
         Assert.assertNotNull(id);
+        System.out.println("id = " + id);
+    }
+
+    @Test
+    public void useIdAnnotateAttribute() {
+        Product p1 = new Product();
+        p1.setOid("123456");
+        p1.setName("A new Hope");
+        p1.setDescription("A long time ago");
+
+        String id = idResolver.getId(p1);
+
+        Assert.assertNotNull(id);
+        Assert.assertEquals("123456", id);
         System.out.println("id = " + id);
     }
 

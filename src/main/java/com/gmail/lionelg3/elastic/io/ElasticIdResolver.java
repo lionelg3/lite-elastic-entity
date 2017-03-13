@@ -1,5 +1,7 @@
 package com.gmail.lionelg3.elastic.io;
 
+import com.gmail.lionelg3.elastic.io.annotation.Id;
+
 import javax.xml.bind.annotation.XmlID;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -45,9 +47,24 @@ class ElasticIdResolver {
                 return _useAnnotatedMethod(o);
             }
         }
+        for (Method method : o.getClass().getMethods()) {
+            if (method.isAnnotationPresent(Id.class)) {
+                classCache.put(o.getClass(), KindOfId.USE_ANNOTATED_METHOD);
+                methodCache.put(o.getClass(), method);
+                return _useAnnotatedMethod(o);
+            }
+        }
         // use annotated attribute
         for (Field field : o.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(XmlID.class)) {
+                field.setAccessible(true);
+                classCache.put(o.getClass(), KindOfId.USE_ANNOTATED_ATTRIBUTE);
+                fieldCache.put(o.getClass(), field);
+                return _useAnnotatedField(o);
+            }
+        }
+        for (Field field : o.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Id.class)) {
                 field.setAccessible(true);
                 classCache.put(o.getClass(), KindOfId.USE_ANNOTATED_ATTRIBUTE);
                 fieldCache.put(o.getClass(), field);
