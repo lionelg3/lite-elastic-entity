@@ -1,11 +1,13 @@
 package com.gmail.lionelg3.elastic.io.pub;
 
 import com.gmail.lionelg3.elastic.io.ElasticManager;
+import com.gmail.lionelg3.elastic.io.server.EmbeddedElasticSearchServer;
 import com.gmail.lionelg3.elastic.object.Article;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import java.net.UnknownHostException;
@@ -18,6 +20,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
  * Created by lionel on 27/11/2016.
  *
  */
+@Listeners(EmbeddedElasticSearchServer.class)
 public class ElasticManagerAsyncTest {
     private static final int PAUSE = 500;
 

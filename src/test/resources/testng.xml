@@ -1,0 +1,27 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="ElasticLiteTest" verbose="1" parallel="false">
+
+    <test name="NoServer" >
+        <classes>
+            <class name="com.gmail.lionelg3.elastic.io.ElasticConfigurationTest" />
+            <class name="com.gmail.lionelg3.elastic.io.ElasticIdResolverTest" />
+        </classes>
+    </test>
+
+    <test name="WithServerPrivate">
+        <classes>
+            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticAccessTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticRepositoryTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticRepositoryAsyncTest"/>
+        </classes>
+    </test>
+
+    <test name="WithServerPublic">
+        <classes>
+            <class name="com.gmail.lionelg3.elastic.io.pub.ElasticManagerTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.pub.ElasticManagerAsyncTest"/>
+        </classes>
+    </test>
+
+</suite>
