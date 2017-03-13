@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * Created by lionel on 21/11/2016.
  *
  */
-public class ElasticRepository<T> {
+class ElasticRepository<T> {
 
     private final ElasticAccess _access;
     private final ObjectMapper _mapper;
@@ -31,7 +31,7 @@ public class ElasticRepository<T> {
     private String _index;
     private String _type;
 
-    public ElasticRepository(ElasticAccess access, Class<T> clazz) {
+    ElasticRepository(ElasticAccess access, Class<T> clazz) {
         this._access = access;
         this._mapper = new ObjectMapper();
         this._clazz = clazz;

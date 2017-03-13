@@ -11,9 +11,9 @@
 
     <test name="WithServerPrivate">
         <classes>
-            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticAccessTest"/>
-            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticRepositoryTest"/>
-            <class name="com.gmail.lionelg3.elastic.io.priv.ElasticRepositoryAsyncTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.ElasticAccessTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.ElasticRepositoryTest"/>
+            <class name="com.gmail.lionelg3.elastic.io.ElasticRepositoryAsyncTest"/>
         </classes>
     </test>
 

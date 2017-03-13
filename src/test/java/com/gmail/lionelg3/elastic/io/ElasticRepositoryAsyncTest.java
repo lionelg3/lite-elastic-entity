@@ -1,7 +1,5 @@
-package com.gmail.lionelg3.elastic.io.priv;
+package com.gmail.lionelg3.elastic.io;
 
-import com.gmail.lionelg3.elastic.io.ElasticAccess;
-import com.gmail.lionelg3.elastic.io.ElasticRepository;
 import com.gmail.lionelg3.elastic.io.server.EmbeddedElasticSearchServer;
 import com.gmail.lionelg3.elastic.object.Article;
 import org.elasticsearch.common.settings.Settings;
@@ -16,35 +14,34 @@ import org.testng.annotations.Test;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.List;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 /**
- * Created by lionel on 22/11/2016.
+ * Created by lionel on 22/11/2016
  *
  */
 @Listeners(EmbeddedElasticSearchServer.class)
-public class ElasticRepositoryTest {
-    private static final int PAUSE = 50;
+public class ElasticRepositoryAsyncTest {
+    private static final int PAUSE = 500;
 
     ElasticAccess elasticAccess;
     ElasticRepository<Article> articleRepository;
 
-    Article a1 = null;
+    Article a2 = null;
 
     @BeforeClass
     public void init() throws UnknownHostException {
         elasticAccess = new ElasticAccess(Settings.EMPTY, new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
         articleRepository = new ElasticRepository<>(elasticAccess, Article.class);
 
-        a1 = new Article();
-        a1.setId("" + System.currentTimeMillis());
-        a1.setTexte("Sample");
-        a1.setTitre("Exemple");
-        a1.setOrdre(100);
-        a1.setDate(new Date());
-        a1.setEtat(Article.Etat.MASQUE);
+        a2 = new Article();
+        a2.setId("" + System.currentTimeMillis());
+        a2.setTexte("Sample");
+        a2.setTitre("Titre 200");
+        a2.setOrdre(100);
+        a2.setDate(new Date());
+        a2.setEtat(Article.Etat.MASQUE);
     }
 
     @AfterMethod
@@ -55,25 +52,32 @@ public class ElasticRepositoryTest {
 
     @Test()
     public void insert() {
-        String id = articleRepository.insert(a1.getId(), a1);
-        System.out.println("insert ok = " + id);
-        Assert.assertEquals(id, a1.getId());
+        articleRepository.insert(a2.getId(), a2, (article) -> {
+            Assert.assertNotNull(article);
+            Assert.assertEquals(article.getId(), a2.getId());
+            System.out.println("Insert OK " + article.getId() + " -> " + article);
+        });
     }
 
     @Test(dependsOnMethods = "insert")
     public void load() {
-        Article article = articleRepository.load(a1.getId());
-        System.out.println("load ok " + article);
-        Assert.assertEquals(article.getTitre(), a1.getTitre());
-        Assert.assertEquals(article.getTexte(), a1.getTexte());
+        articleRepository.load(a2.getId(), (article) -> {
+            Assert.assertNotNull(article);
+            Assert.assertEquals(article.getTitre(), a2.getTitre());
+            Assert.assertEquals(article.getTexte(), a2.getTexte());
+            System.out.println("load ok " + article);
+        });
+
     }
 
     @Test(dependsOnMethods = "load")
     public void update() {
-        a1.setEtat(Article.Etat.ARCHIVE);
-        Article article = articleRepository.update(a1.getId(), a1);
-        System.out.println("update ok " + article);
-        Assert.assertEquals(article.getEtat(), a1.getEtat());
+        a2.setEtat(Article.Etat.AFFICHE);
+        articleRepository.update(a2.getId(), a2, (article) -> {
+            Assert.assertNotNull(article);
+            Assert.assertEquals(article.getEtat(), a2.getEtat());
+            System.out.println("update ok " + article);
+        });
     }
 
     @Test(dependsOnMethods = "update")
@@ -83,8 +87,12 @@ public class ElasticRepositoryTest {
                 "Sample"
         );
         System.out.println("QUERY = " + q);
-        List<Article> articles = articleRepository.search(q);
-        articles.forEach(System.out::println);
+        articleRepository.search(q, (articles) -> {
+            articles.forEach(System.out::println);
+            articles.stream()
+                    .map(Article::getId)
+                    .forEach(System.out::println);
+        });
     }
 
     @Test(dependsOnMethods = "search_QueryBuilder")
@@ -105,12 +113,19 @@ public class ElasticRepositoryTest {
                 "  }\n" +
                 "}";
         System.out.println("QUERY = " + q);
-        List<Article> articles = articleRepository.search(q);
-        articles.forEach(System.out::println);
+        articleRepository.search(q, (articles) -> {
+            articles.forEach(System.out::println);
+            articles.stream()
+                    .map(Article::getId)
+                    .forEach(System.out::println);
+        });
     }
 
     @Test(dependsOnMethods = "search_json")
     public void delete() {
-        articleRepository.delete(a1.getId());
+        articleRepository.delete(a2.getId(), (id) -> {
+            Assert.assertNotNull(id);
+            System.out.println("Delete article " + id);
+        });
     }
 }

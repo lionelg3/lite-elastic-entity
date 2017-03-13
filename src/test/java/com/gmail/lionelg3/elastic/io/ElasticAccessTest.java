@@ -1,6 +1,5 @@
-package com.gmail.lionelg3.elastic.io.priv;
+package com.gmail.lionelg3.elastic.io;
 
-import com.gmail.lionelg3.elastic.io.ElasticAccess;
 import com.gmail.lionelg3.elastic.io.conf.ElasticConfiguration;
 import com.gmail.lionelg3.elastic.io.conf.ElasticConfigurationLoader;
 import com.gmail.lionelg3.elastic.io.server.EmbeddedElasticSearchServer;

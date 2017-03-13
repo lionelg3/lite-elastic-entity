@@ -14,13 +14,13 @@ import java.net.UnknownHostException;
  * Created by lionel on 21/11/2016.
  *
  */
-public class ElasticAccess {
+class ElasticAccess {
 
     private final Settings settings;
     private final TransportAddress[] addresses;
     private Client _client;
 
-    public ElasticAccess(ElasticConfiguration configuration) {
+    ElasticAccess(ElasticConfiguration configuration) {
         Settings.Builder builder = Settings.builder();
         configuration.getSettings()
                 .forEach(builder::put);
@@ -39,12 +39,12 @@ public class ElasticAccess {
         }
     }
 
-    public ElasticAccess(Settings settings, TransportAddress ... addresses) {
+    ElasticAccess(Settings settings, TransportAddress ... addresses) {
         this.settings = settings;
         this.addresses = addresses;
     }
 
-    public Client getClient() {
+    Client getClient() {
         if (_client == null)
             _client = new PreBuiltTransportClient(this.settings).addTransportAddresses(addresses);
         return _client;
